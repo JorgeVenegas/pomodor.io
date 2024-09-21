@@ -4,11 +4,11 @@ import NavBar from '../NavBar';
 
 const Layout = () => {
     return (
-        <div className='flex flex-col'>
+        <div className='h-full flex flex-col'>
             <div className="fixed top-0 w-full flex justify-center">
                 <NavBar />
             </div>
-            <div className="h-full mt-16">
+            <div className="h-full pt-16 flex justify-center">
                 <Outlet />
             </div>
         </div>

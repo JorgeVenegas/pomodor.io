@@ -28,11 +28,11 @@ const NavBar = () => {
 
                     <NavigationMenuTrigger>Tools</NavigationMenuTrigger>
                     <NavigationMenuContent>
-                        <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                        <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] bg-background text-primary">
                             <li className="row-span-3">
                                 <NavigationMenuLink asChild>
                                     <a
-                                        className="flex h-full w-full select-none flex-col justify-center rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                                        className="flex h-full w-full select-none flex-col justify-center rounded-md bg-gradient-to-b from-accent/50 to-accent/25 p-6 no-underline outline-none focus:shadow-md"
                                         href="/"
                                     >
                                         <div className="mb-2 mt-4 text-lg font-medium">
@@ -65,7 +65,7 @@ const ListItem = React.forwardRef(({ className, title, children, ...props }, ref
                 <a
                     ref={ref}
                     className={cn(
-                        "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+                        "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent/50 hover:text-accent-foreground focus:bg-accent/50 focus:text-accent-foreground",
                         className
                     )}
                     {...props}

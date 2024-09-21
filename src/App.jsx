@@ -8,7 +8,7 @@ import Layout from './components/pages/Layout';
 
 function App() {
   return (
-    <div className="w-full">
+    <>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
@@ -17,7 +17,7 @@ function App() {
           <Route path="*" element={<NoMatch />} />
         </Route>
       </Routes>
-    </div>
+    </>
   )
 }
 
