@@ -24,13 +24,18 @@ const initialState = {
     statuses: [
         {
             name: "repetitions",
-            value: 0
+            value: 0,
+            focusSessionsCompleted: 0,
+            restSessionsCompleted: 0
         },
         {
-            name: "time",
-            value: 0
+            name: "session",
+            type: "",
+            goal: 0,
+            startTime: 0,
+            elapsedTime: 0
         }
-    ]
+    ],
 };
 
 const TimerSlice = createSlice({
@@ -50,7 +55,17 @@ const TimerSlice = createSlice({
             statusToChange.value = newValue
         },
         startSession(state, action) {
-            { }
+            const sessionStatus = state.statuses.find(status => status.name === "session")
+            const goalReference = state.goals.find(goal => goal.name === action.payload)
+
+            sessionStatus.startTime = new Date().getTime()
+            console.log("Startime set to: ", sessionStatus.startTime)
+
+            sessionStatus.goal = goalReference.value
+        },
+        pauseSession(state, action) {
+            const sessionStatus = state.statuses.find(status => status.name === "session")
+            sessionStatus.elapsedTime = new Date().getTime() - sessionStatus.startTime
         }
     }
 });
@@ -59,7 +74,8 @@ export const {
     incrementGoal,
     decrementGoal,
     updateStatus,
-    startSession
+    startSession,
+    pauseSession
 } = TimerSlice.actions;
 
 export default TimerSlice.reducer;

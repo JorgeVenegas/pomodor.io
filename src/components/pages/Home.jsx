@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Minus, Plus } from "lucide-react"
 import {
     Drawer,
@@ -23,15 +23,50 @@ const Home = () => {
     const restGoal = useSelector(state => state.timer.goals.find(goal => goal.name === "rest"));
     const repetitionsGoal = useSelector(state => state.timer.goals.find(goal => goal.name === "repetitions"));
 
-    const timeStatus = useSelector(state => state.timer.statuses.find(status => status.name === "time"));
+    const sessionStatus = useSelector(state => state.timer.statuses.find(status => status.name === "session"));
     const repetitionsStatus = useSelector(state => state.timer.statuses.find(status => status.name === "repetitions"));
 
-    function handleGoalSetting(goal, increment) {
+    const [elapsedTime, setElapsedTime] = useState({
+        hours: "00",
+        minutes: "00",
+        seconds: "00"
+    });
+
+    const [timerReaminingPercentage, setTimerReaminingPercentage] = useState(0);
+
+    useEffect(() => {
+        if (sessionStatus.startTime === 0)
+            return;
+        setInterval(() => {
+            const currentTime = new Date().getTime()
+            const timeDiff = (currentTime - sessionStatus.startTime)
+            const elapsedTimeInHours = Math.floor((timeDiff % 86400000) / 3600000).toLocaleString('en-US', {
+                minimumIntegerDigits: 2,
+                useGrouping: false
+            })
+            const elapsedTimeInMinutes = Math.floor((timeDiff % 3600000) / 60000).toLocaleString('en-US', {
+                minimumIntegerDigits: 2,
+                useGrouping: false
+            })
+            const elapsedTimeInSeconds = Math.floor((timeDiff % 60000) / 1000).toLocaleString('en-US', {
+                minimumIntegerDigits: 2,
+                useGrouping: false
+            });
+            setElapsedTime({
+                hours: elapsedTimeInHours,
+                minutes: elapsedTimeInMinutes,
+                seconds: elapsedTimeInSeconds
+            });
+            setTimerReaminingPercentage((1 - (elapsedTimeInMinutes / sessionStatus.goal)) * 100);
+        }, 1000)
+    }, [sessionStatus.goal])
+
+    const handleGoalSetting = (goal, increment) => {
         dispatch(increment ? incrementGoal(goal) : decrementGoal(goal))
     }
 
-    function handleStartSession() {
-        dispatch(startSession())
+    const handleStartSession = () => {
+        dispatch(startSession("focus"))
     }
 
     const timer = {
@@ -39,21 +74,23 @@ const Home = () => {
             height: "0%",
         },
         counting: {
-            height: timeStatus.value,
+            // height: `${timerReaminingPercentage}%`,
         },
         finished: {
-            height: "0%",
+            height: { "100%": "0%" },
         }
     }
 
     return (
         <>
+            <div className='text-primary'>{elapsedTime.hours}:{elapsedTime.minutes}:{elapsedTime.seconds}</div>
             <motion.div
                 className="absolute bottom-0 bg-primary w-full"
                 variants={timer}
                 initial="start"
                 animate="counting"
-                exit="finished">
+                exit="finished"
+                transition={{ duration: 1 }}>
 
             </motion.div>
             <Drawer>
