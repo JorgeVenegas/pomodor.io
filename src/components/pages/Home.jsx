@@ -42,7 +42,7 @@ const Home = () => {
     useEffect(() => {
         if (sessionStatus.startTime === 0)
             return;
-        setInterval(() => {
+        const interval = setInterval(() => {
             const currentTime = new Date().getTime()
             const timeDiff = (currentTime - sessionStatus.startTime)
 
@@ -88,7 +88,11 @@ const Home = () => {
                 totalInSeconds: totalElapsedTimeInSeconds
             });
 
-            setTimerReaminingPercentage(Math.round((1 - (totalElapsedTimeInSeconds / (sessionStatus.goal * 60))) * 10000) / 100);
+            setTimerReaminingPercentage(Math.round((1 - (totalElapsedTimeInSeconds / (sessionStatus.goal * 60))) * 10000) / 100); 
+            
+            if (remainingTime <= 0) {
+                
+            }
         }, 1000)
     }, [sessionStatus.goal])
 
@@ -99,6 +103,8 @@ const Home = () => {
     const handleStartSession = () => {
         dispatch(startSession("focus"))
     }
+
+
 
     const timer = {
         start: {

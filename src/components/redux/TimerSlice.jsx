@@ -59,7 +59,6 @@ const TimerSlice = createSlice({
             const goalReference = state.goals.find(goal => goal.name === action.payload)
 
             sessionStatus.startTime = new Date().getTime()
-            console.log("Startime set to: ", sessionStatus.startTime)
 
             sessionStatus.goal = goalReference.value
             sessionStatus.type = action.payload
@@ -67,6 +66,12 @@ const TimerSlice = createSlice({
         pauseSession(state, action) {
             const sessionStatus = state.statuses.find(status => status.name === "session")
             sessionStatus.elapsedTime = new Date().getTime() - sessionStatus.startTime
+        },
+        endSubSession(state, action) {
+
+        },
+        endSession() {
+
         }
     }
 });
@@ -76,7 +81,9 @@ export const {
     decrementGoal,
     updateStatus,
     startSession,
-    pauseSession
+    pauseSession,
+    endSubSession,
+    endSession
 } = TimerSlice.actions;
 
 export default TimerSlice.reducer;
