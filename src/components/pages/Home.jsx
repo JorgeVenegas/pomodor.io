@@ -31,6 +31,11 @@ const Home = () => {
         minutes: "00",
         seconds: "00"
     });
+    const [remainingTime, setRemainingTime] = useState({
+        hours: "00",
+        minutes: "00",
+        seconds: "00"
+    });
 
     const [timerReaminingPercentage, setTimerReaminingPercentage] = useState(0);
 
@@ -40,6 +45,29 @@ const Home = () => {
         setInterval(() => {
             const currentTime = new Date().getTime()
             const timeDiff = (currentTime - sessionStatus.startTime)
+
+            const totalRemainingTimeInSeconds = (sessionStatus.goal * 60) - Math.floor(timeDiff / 1000)
+            const remainingTimeInHours = (Math.floor((totalRemainingTimeInSeconds % 86400) / 3660)).toLocaleString('en-US', {
+                minimumIntegerDigits: 2,
+                useGrouping: false
+            })
+            const remainingTimeInMinutes = (Math.floor((totalRemainingTimeInSeconds % 3660) / 60)).toLocaleString('en-US', {
+                minimumIntegerDigits: 2,
+                useGrouping: false
+            })
+            const remainingTimeInSeconds = (Math.floor(totalRemainingTimeInSeconds % 60)).toLocaleString('en-US', {
+                minimumIntegerDigits: 2,
+                useGrouping: false
+            });
+
+            setRemainingTime({
+                hours: remainingTimeInHours,
+                minutes: remainingTimeInMinutes,
+                seconds: remainingTimeInSeconds,
+                totalInSeconds: totalRemainingTimeInSeconds
+            });
+
+            const totalElapsedTimeInSeconds = Math.floor(timeDiff / 1000)
             const elapsedTimeInHours = Math.floor((timeDiff % 86400000) / 3600000).toLocaleString('en-US', {
                 minimumIntegerDigits: 2,
                 useGrouping: false
@@ -52,12 +80,15 @@ const Home = () => {
                 minimumIntegerDigits: 2,
                 useGrouping: false
             });
+
             setElapsedTime({
                 hours: elapsedTimeInHours,
                 minutes: elapsedTimeInMinutes,
-                seconds: elapsedTimeInSeconds
+                seconds: elapsedTimeInSeconds,
+                totalInSeconds: totalElapsedTimeInSeconds
             });
-            setTimerReaminingPercentage((1 - (elapsedTimeInMinutes / sessionStatus.goal)) * 100);
+
+            setTimerReaminingPercentage(Math.round((1 - (totalElapsedTimeInSeconds / (sessionStatus.goal * 60))) * 10000) / 100);
         }, 1000)
     }, [sessionStatus.goal])
 
@@ -74,28 +105,21 @@ const Home = () => {
             height: "0%",
         },
         counting: {
-            // height: `${timerReaminingPercentage}%`,
+            height: `${timerReaminingPercentage}%`,
         },
         finished: {
-            height: { "100%": "0%" },
+            height: ["0&", "100%"],
+            top: [, 0]
         }
     }
 
     return (
         <>
-            <div className='text-primary'>{elapsedTime.hours}:{elapsedTime.minutes}:{elapsedTime.seconds}</div>
-            <motion.div
-                className="absolute bottom-0 bg-primary w-full"
-                variants={timer}
-                initial="start"
-                animate="counting"
-                exit="finished"
-                transition={{ duration: 1 }}>
-
-            </motion.div>
             <Drawer>
                 <DrawerTrigger asChild>
-                    <Button>Set Pomodoro</Button>
+                    <div className='flex justify-center'>
+                        <Button>Set Pomodoro</Button>
+                    </div>
                 </DrawerTrigger>
                 <DrawerContent>
                     <div className="mx-auto w-full max-w-sm">
@@ -219,6 +243,16 @@ const Home = () => {
                     </div>
                 </DrawerContent>
             </Drawer>
+            <motion.div
+                className={`absolute bottom-0 left-0 bg-primary w-full z-0 ${sessionStatus.goal ? "visible" : "invisible"} flex`}
+                variants={timer}
+                initial="start"
+                animate="counting"
+                exit="finished">
+                <div className='text-background font-bold text-5xl md:text-7xl xl:text-9xl p-4 flex-1 flex justify-start items-start'>
+                    <h1 className='h-fit'>Time to {sessionStatus.type}.</h1></div>
+                <div className='text-background font-bold text-5xl md:text-7xl xl:text-9xl p-4 flex justify-end items-end'><h1 className='h-fit'>{remainingTime.hours != "00" ? `${remainingTime.hours}:` : ""}{remainingTime.minutes != "00" ? `${remainingTime.minutes}:` : ""}{remainingTime.seconds}</h1></div>
+            </motion.div>
         </>
     )
 }

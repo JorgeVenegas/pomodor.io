@@ -62,6 +62,7 @@ const TimerSlice = createSlice({
             console.log("Startime set to: ", sessionStatus.startTime)
 
             sessionStatus.goal = goalReference.value
+            sessionStatus.type = action.payload
         },
         pauseSession(state, action) {
             const sessionStatus = state.statuses.find(status => status.name === "session")
