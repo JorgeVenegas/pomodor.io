@@ -73,7 +73,9 @@ Follow these steps to set up and run the project locally:
 
 ## Screenshots
 
-_Add screenshots here if available, showing key features of the application._
+![image](https://github.com/user-attachments/assets/23924ce0-f6e7-4b7f-a80b-985cebc1db50)
+![image](https://github.com/user-attachments/assets/07511de9-1a87-4ca5-b1bd-8676580d0190)
+
 
 ## Contributing
 
