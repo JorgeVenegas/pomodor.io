@@ -11,7 +11,7 @@ import {
     DrawerTrigger,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { useDispatch, useSelector } from 'react-redux';
 import { decrementGoal, incrementGoal, startSession } from '../redux/TimerSlice'
 
@@ -88,10 +88,10 @@ const Home = () => {
                 totalInSeconds: totalElapsedTimeInSeconds
             });
 
-            setTimerReaminingPercentage(Math.round((1 - (totalElapsedTimeInSeconds / (sessionStatus.goal * 60))) * 10000) / 100); 
-            
+            setTimerReaminingPercentage(Math.round((1 - (totalElapsedTimeInSeconds / (sessionStatus.goal * 60))) * 10000) / 100);
+
             if (remainingTime <= 0) {
-                
+
             }
         }, 1000)
     }, [sessionStatus.goal])
@@ -103,8 +103,6 @@ const Home = () => {
     const handleStartSession = () => {
         dispatch(startSession("focus"))
     }
-
-
 
     const timer = {
         start: {
@@ -123,10 +121,14 @@ const Home = () => {
         <>
             <Drawer>
                 <DrawerTrigger asChild>
-                    <div className='flex justify-center'>
+                    <motion.div key="drawer-trigger-button" className={`flex justify-center align-top ${sessionStatus.goal ? "hidden" : "visible"}`}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.2 }}>
                         <Button>Set Pomodoro</Button>
-                    </div>
+                    </motion.div>
                 </DrawerTrigger>
+
                 <DrawerContent>
                     <div className="mx-auto w-full max-w-sm">
                         <DrawerHeader>
@@ -250,14 +252,30 @@ const Home = () => {
                 </DrawerContent>
             </Drawer>
             <motion.div
-                className={`absolute bottom-0 left-0 bg-primary w-full z-0 ${sessionStatus.goal ? "visible" : "invisible"} flex`}
+                className={`absolute bottom-0 left-0 bg-primary w-full z-10 m-0 p-0 ${sessionStatus.goal ? "visible" : "hidden"} flex overflow-clip`}
                 variants={timer}
                 initial="start"
                 animate="counting"
                 exit="finished">
-                <div className='text-background font-bold text-5xl md:text-7xl xl:text-9xl p-4 flex-1 flex justify-start items-start'>
-                    <h1 className='h-fit'>Time to {sessionStatus.type}.</h1></div>
-                <div className='text-background font-bold text-5xl md:text-7xl xl:text-9xl p-4 flex justify-end items-end'><h1 className='h-fit'>{remainingTime.hours != "00" ? `${remainingTime.hours}:` : ""}{remainingTime.minutes != "00" ? `${remainingTime.minutes}:` : ""}{remainingTime.seconds}</h1></div>
+                <div className='text-background font-bold text-5xl md:text-7xl xl:text-9xl p-4 md:p-12 flex justify-start items-end flex-1 '>
+                    <h1 className='h-fit'>Time to {sessionStatus.type}.</h1>
+                </div>
+                <div className='text-background font-bold text-5xl md:text-7xl xl:text-9xl p-4 md:p-12 flex justify-end items-end'>
+                    <h1 className='h-fit'>{remainingTime.hours != "00" ? `${remainingTime.hours}:` : ""}{remainingTime.minutes != "00" ? `${remainingTime.minutes}:` : ""}{remainingTime.seconds}</h1>
+                </div>
+            </motion.div>
+
+            <motion.div className={`absolute bottom-0 left-0 w-full z-0 m-0 p-0 ${sessionStatus.goal ? "visible" : "hidden"} flex`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ delay: 5, duration: 1 }}>
+                <div className='text-primary font-bold text-5xl md:text-7xl xl:text-9xl p-4 md:p-12 flex justify-start items-end flex-1 '>
+                    <h1 className='h-fit'>Time to {sessionStatus.type}.</h1>
+                </div>
+                <div className='text-primary font-bold text-5xl md:text-7xl xl:text-9xl p-4 md:p-12 flex justify-end items-end'>
+                    <h1 className='h-fit'>{remainingTime.hours != "00" ? `${remainingTime.hours}:` : ""}{remainingTime.minutes != "00" ? `${remainingTime.minutes}:` : ""}{remainingTime.seconds}</h1>
+                </div>
             </motion.div>
         </>
     )

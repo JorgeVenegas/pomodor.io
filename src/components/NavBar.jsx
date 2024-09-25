@@ -12,49 +12,53 @@ import {
 import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu"
 import { Link } from 'react-router-dom';
 import { cn } from "@/lib/utils"
-
-
+import { motion } from "framer-motion"
 
 const NavBar = () => {
     return (
-        <NavigationMenu className="p-2">
-            <NavigationMenuList>
-                <NavigationMenuItem>
-                    <Link to="/" className={navigationMenuTriggerStyle()}>
-                        Home
-                    </Link>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
+        <motion.div className='flex justify-center'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}>
+            <NavigationMenu className="p-2">
+                <NavigationMenuList>
+                    <NavigationMenuItem>
+                        <Link to="/" className={navigationMenuTriggerStyle()}>
+                            Home
+                        </Link>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
 
-                    <NavigationMenuTrigger>Tools</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                        <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] bg-background text-primary">
-                            <li className="row-span-3">
-                                <NavigationMenuLink asChild>
-                                    <a
-                                        className="flex h-full w-full select-none flex-col justify-center rounded-md bg-gradient-to-b from-accent/50 to-accent/25 p-6 no-underline outline-none focus:shadow-md"
-                                        href="/"
-                                    >
-                                        <div className="mb-2 mt-4 text-lg font-medium">
-                                            pomodor.io
-                                        </div>
-                                        <p className="text-sm leading-tight text-muted-foreground">
-                                            The best app to tackle procrastination.
-                                        </p>
-                                    </a>
-                                </NavigationMenuLink>
-                            </li>
-                            <ListItem href="/about" title="Getting Stated">
-                                Learn how to take out the most from pomodor.io. Never waste time again.
-                            </ListItem>
-                            <ListItem href="/dashboard" title="My Dashboard">
-                                Keep track of your progress and keep impoving every day to reach your goals!
-                            </ListItem>
-                        </ul>
-                    </NavigationMenuContent>
-                </NavigationMenuItem>
-            </NavigationMenuList>
-        </NavigationMenu>
+                        <NavigationMenuTrigger>Tools</NavigationMenuTrigger>
+                        <NavigationMenuContent>
+                            <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] bg-background text-primary">
+                                <li className="row-span-3">
+                                    <NavigationMenuLink asChild>
+                                        <a
+                                            className="flex h-full w-full select-none flex-col justify-center rounded-md bg-gradient-to-b from-accent/50 to-accent/25 p-6 no-underline outline-none focus:shadow-md"
+                                            href="/"
+                                        >
+                                            <div className="mb-2 mt-4 text-lg font-medium">
+                                                pomodor.io
+                                            </div>
+                                            <p className="text-sm leading-tight text-muted-foreground">
+                                                The best app to tackle procrastination.
+                                            </p>
+                                        </a>
+                                    </NavigationMenuLink>
+                                </li>
+                                <ListItem href="/about" title="Getting Stated">
+                                    Learn how to take out the most from pomodor.io. Never waste time again.
+                                </ListItem>
+                                <ListItem href="/dashboard" title="My Dashboard">
+                                    Keep track of your progress and keep impoving every day to reach your goals!
+                                </ListItem>
+                            </ul>
+                        </NavigationMenuContent>
+                    </NavigationMenuItem>
+                </NavigationMenuList>
+            </NavigationMenu>
+        </motion.div>
     )
 }
 
