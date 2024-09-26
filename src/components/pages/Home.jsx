@@ -13,7 +13,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
 import { useDispatch, useSelector } from 'react-redux';
-import { decrementGoal, incrementGoal, startSession } from '../redux/TimerSlice'
+import { decrementGoal, incrementGoal, startSession, startSubsession } from '../redux/TimerSlice'
+import Timer from './home/Timer';
 
 
 const Home = () => {
@@ -24,97 +25,15 @@ const Home = () => {
     const repetitionsGoal = useSelector(state => state.timer.goals.find(goal => goal.name === "repetitions"));
 
     const sessionStatus = useSelector(state => state.timer.statuses.find(status => status.name === "session"));
-    const repetitionsStatus = useSelector(state => state.timer.statuses.find(status => status.name === "repetitions"));
-
-    const [elapsedTime, setElapsedTime] = useState({
-        hours: "00",
-        minutes: "00",
-        seconds: "00"
-    });
-    const [remainingTime, setRemainingTime] = useState({
-        hours: "00",
-        minutes: "00",
-        seconds: "00"
-    });
-
-    const [timerReaminingPercentage, setTimerReaminingPercentage] = useState(0);
-
-    useEffect(() => {
-        if (sessionStatus.startTime === 0)
-            return;
-        const interval = setInterval(() => {
-            const currentTime = new Date().getTime()
-            const timeDiff = (currentTime - sessionStatus.startTime)
-
-            const totalRemainingTimeInSeconds = (sessionStatus.goal * 60) - Math.floor(timeDiff / 1000)
-            const remainingTimeInHours = (Math.floor((totalRemainingTimeInSeconds % 86400) / 3660)).toLocaleString('en-US', {
-                minimumIntegerDigits: 2,
-                useGrouping: false
-            })
-            const remainingTimeInMinutes = (Math.floor((totalRemainingTimeInSeconds % 3660) / 60)).toLocaleString('en-US', {
-                minimumIntegerDigits: 2,
-                useGrouping: false
-            })
-            const remainingTimeInSeconds = (Math.floor(totalRemainingTimeInSeconds % 60)).toLocaleString('en-US', {
-                minimumIntegerDigits: 2,
-                useGrouping: false
-            });
-
-            setRemainingTime({
-                hours: remainingTimeInHours,
-                minutes: remainingTimeInMinutes,
-                seconds: remainingTimeInSeconds,
-                totalInSeconds: totalRemainingTimeInSeconds
-            });
-
-            const totalElapsedTimeInSeconds = Math.floor(timeDiff / 1000)
-            const elapsedTimeInHours = Math.floor((timeDiff % 86400000) / 3600000).toLocaleString('en-US', {
-                minimumIntegerDigits: 2,
-                useGrouping: false
-            })
-            const elapsedTimeInMinutes = Math.floor((timeDiff % 3600000) / 60000).toLocaleString('en-US', {
-                minimumIntegerDigits: 2,
-                useGrouping: false
-            })
-            const elapsedTimeInSeconds = Math.floor((timeDiff % 60000) / 1000).toLocaleString('en-US', {
-                minimumIntegerDigits: 2,
-                useGrouping: false
-            });
-
-            setElapsedTime({
-                hours: elapsedTimeInHours,
-                minutes: elapsedTimeInMinutes,
-                seconds: elapsedTimeInSeconds,
-                totalInSeconds: totalElapsedTimeInSeconds
-            });
-
-            setTimerReaminingPercentage(Math.round((1 - (totalElapsedTimeInSeconds / (sessionStatus.goal * 60))) * 10000) / 100);
-
-            if (remainingTime <= 0) {
-
-            }
-        }, 1000)
-    }, [sessionStatus.goal])
+    const activeSubsessionStatus = useSelector(state => state.timer.statuses.find(status => status.name === "activeSubsession"));
 
     const handleGoalSetting = (goal, increment) => {
         dispatch(increment ? incrementGoal(goal) : decrementGoal(goal))
     }
 
     const handleStartSession = () => {
-        dispatch(startSession("focus"))
-    }
-
-    const timer = {
-        start: {
-            height: "0%",
-        },
-        counting: {
-            height: `${timerReaminingPercentage}%`,
-        },
-        finished: {
-            height: ["0&", "100%"],
-            top: [, 0]
-        }
+        dispatch(startSession());
+        dispatch(startSubsession({ type: "focus" }));
     }
 
     return (
@@ -251,32 +170,7 @@ const Home = () => {
                     </div>
                 </DrawerContent>
             </Drawer>
-            <motion.div
-                className={`absolute bottom-0 left-0 bg-primary w-full z-10 m-0 p-0 ${sessionStatus.goal ? "visible" : "hidden"} flex overflow-clip`}
-                variants={timer}
-                initial="start"
-                animate="counting"
-                exit="finished">
-                <div className='text-background font-bold text-5xl md:text-7xl xl:text-9xl p-4 md:p-12 flex justify-start items-end flex-1 '>
-                    <h1 className='h-fit'>Time to {sessionStatus.type}.</h1>
-                </div>
-                <div className='text-background font-bold text-5xl md:text-7xl xl:text-9xl p-4 md:p-12 flex justify-end items-end'>
-                    <h1 className='h-fit'>{remainingTime.hours != "00" ? `${remainingTime.hours}:` : ""}{remainingTime.minutes != "00" ? `${remainingTime.minutes}:` : ""}{remainingTime.seconds}</h1>
-                </div>
-            </motion.div>
-
-            <motion.div className={`absolute bottom-0 left-0 w-full z-0 m-0 p-0 ${sessionStatus.goal ? "visible" : "hidden"} flex`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ delay: 5, duration: 1 }}>
-                <div className='text-primary font-bold text-5xl md:text-7xl xl:text-9xl p-4 md:p-12 flex justify-start items-end flex-1 '>
-                    <h1 className='h-fit'>Time to {sessionStatus.type}.</h1>
-                </div>
-                <div className='text-primary font-bold text-5xl md:text-7xl xl:text-9xl p-4 md:p-12 flex justify-end items-end'>
-                    <h1 className='h-fit'>{remainingTime.hours != "00" ? `${remainingTime.hours}:` : ""}{remainingTime.minutes != "00" ? `${remainingTime.minutes}:` : ""}{remainingTime.seconds}</h1>
-                </div>
-            </motion.div>
+            <Timer />
         </>
     )
 }

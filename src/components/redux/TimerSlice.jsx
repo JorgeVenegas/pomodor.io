@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { useDispatch } from 'react-redux';
 
 const initialState = {
     goals: [{
@@ -23,17 +24,29 @@ const initialState = {
     }],
     statuses: [
         {
-            name: "repetitions",
-            value: 0,
+            name: "session",
+            repetitionsGoal: 0,
+            focusGoal: 0,
+            restGoal: 0,
+            repetitionsCompleted: 0,
             focusSessionsCompleted: 0,
-            restSessionsCompleted: 0
+            restSessionsCompleted: 0,
+            isRunning: false,
+            isCompleted: false,
         },
         {
-            name: "session",
+            name: "activeSubsession",
             type: "",
-            goal: 0,
+            goal: "",
             startTime: 0,
-            elapsedTime: 0
+            remainingTime: {
+                hours: 0,
+                minutes: 0,
+                seconds: 0,
+                totalInSeconds: 0
+            },
+            remainingPercentage: 0,
+            intervalID: "",
         }
     ],
 };
@@ -54,20 +67,53 @@ const TimerSlice = createSlice({
             const statusToChange = state.statuses.find(status => status.name === action.payload)
             statusToChange.value = newValue
         },
-        startSession(state, action) {
+        startSession(state) {
+            console.log("Session started")
             const sessionStatus = state.statuses.find(status => status.name === "session")
-            const goalReference = state.goals.find(goal => goal.name === action.payload)
 
-            sessionStatus.startTime = new Date().getTime()
+            const focusGoal = state.goals.find(goal => goal.name === "focus")
+            const restGoal = state.goals.find(goal => goal.name === "rest")
+            const repetitionsGoal = state.goals.find(goal => goal.name === "repetitions")
 
-            sessionStatus.goal = goalReference.value
-            sessionStatus.type = action.payload
+            sessionStatus.focusGoal = focusGoal.value
+            sessionStatus.restGoal = restGoal.value
+            sessionStatus.repetitionsGoal = repetitionsGoal.value
+        },
+        startSubsession(state, action) {
+            console.log("Subsession started")
+            const sessionStatus = state.statuses.find(status => status.name === "session")
+            const activeSubsessionStatus = state.statuses.find(status => status.name === "activeSubsession")
+
+            sessionStatus.isRunning = true
+            activeSubsessionStatus.type = action.payload.type
+            activeSubsessionStatus.goal = action.payload.type == "focus" ? sessionStatus.focusGoal : sessionStatus.restGoal
+            activeSubsessionStatus.startTime = new Date().getTime()
+            activeSubsessionStatus.remainingTime.totalInSeconds = activeSubsessionStatus.goal * 60
+        },
+        updateRemainingTime(state, action) {
+            const activeSubsessionStatus = state.statuses.find(status => status.name === "activeSubsession")
+            activeSubsessionStatus.remainingTime.totalInSeconds--;
+
+            const remainingTimeInHours = (Math.floor((activeSubsessionStatus.remainingTime.totalInSeconds % 86400) / 3660)).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })
+            const remainingTimeInMinutes = (Math.floor((activeSubsessionStatus.remainingTime.totalInSeconds % 3660) / 60)).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })
+            const remainingTimeInSeconds = (Math.floor(activeSubsessionStatus.remainingTime.totalInSeconds % 60)).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })
+
+            const remainingPercentage = Math.round(((activeSubsessionStatus.remainingTime.totalInSeconds / (activeSubsessionStatus.goal * 60))) * 10000) / 100
+
+            activeSubsessionStatus.remainingTime = {
+                ...activeSubsessionStatus.remainingTime,
+                hours: remainingTimeInHours,
+                minutes: remainingTimeInMinutes,
+                seconds: remainingTimeInSeconds,
+            }
+
+            activeSubsessionStatus.remainingPercentage = remainingPercentage
         },
         pauseSession(state, action) {
             const sessionStatus = state.statuses.find(status => status.name === "session")
             sessionStatus.elapsedTime = new Date().getTime() - sessionStatus.startTime
         },
-        endSubSession(state, action) {
+        endSubSession(state) {
 
         },
         endSession() {
@@ -76,14 +122,19 @@ const TimerSlice = createSlice({
     }
 });
 
+
 export const {
     incrementGoal,
     decrementGoal,
     updateStatus,
     startSession,
+    startSubsession,
+    updateRemainingTime,
     pauseSession,
     endSubSession,
     endSession
 } = TimerSlice.actions;
+
+
 
 export default TimerSlice.reducer;
