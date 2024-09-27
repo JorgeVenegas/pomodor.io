@@ -1,6 +1,6 @@
 # pomodor.io
 
-Pomodor.io is a personal productivity tool that helps users manage their time using the Pomodoro Technique. The project was developed to apply and showcase skills in React.js, Redux, TailwindCSS, Shadcn UI, and React Router.
+pomodor.io is a personal productivity tool that helps users manage their time using the Pomodoro Technique. The project was developed to apply and showcase skills in React.js, Redux, TailwindCSS, Shadcn UI, and React Router.
 
 ## Table of Contents
 
