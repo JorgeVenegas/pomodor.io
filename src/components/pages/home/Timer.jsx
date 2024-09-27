@@ -1,29 +1,36 @@
 import React, { useEffect } from 'react'
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
-import { endSubSession, startSubsession, updateRemainingTime } from '@/components/redux/TimerSlice';
-import { AnimatePresence } from 'framer-motion';
+import { endSession, endSubSession, startSubsession, updateRemainingTime } from '@/components/redux/TimerSlice';
 
 const Timer = () => {
     const dispatch = useDispatch();
 
-    const sessionStatus = useSelector(state => state.timer.statuses.find(status => status.name === "session"));
+    let sessionStatus = useSelector(state => state.timer.statuses.find(status => status.name === "session"));
     const activeSubsessionStatus = useSelector(state => state.timer.statuses.find(status => status.name === "activeSubsession"));
 
     useEffect(() => {
         if (sessionStatus.isRunning) {
             let interval = null;
-            if (activeSubsessionStatus.remainingTime.totalInSeconds > 0) { // Subsession is running
-                interval = setInterval(() => {
-                    dispatch(updateRemainingTime());
-                }, 1000)
+            if (sessionStatus.repetitionsCompleted == sessionStatus.repetitionsGoal) {
+                dispatch(endSession())
             }
-            else if (activeSubsessionStatus.remainingTime.totalInSeconds == 0) { // Subsession is finished
-                interval = setInterval(() => {
-                    dispatch(endSubSession())
-                    dispatch(startSubsession())
-                }, 1000)
+            else if (sessionStatus.hasActiveSubsession) {
+                if (activeSubsessionStatus.remainingTime.totalInSeconds > 0) { // Subsession is running
+                    interval = setInterval(() => {
+                        dispatch(updateRemainingTime());
+                    }, 1000)
+                }
+                else if (activeSubsessionStatus.remainingTime.totalInSeconds == 0) { // Subsession is finished
+                    interval = setInterval(() => {
+                        dispatch(endSubSession())
+                    }, 1000)
+                }
             }
+            else {
+                dispatch(startSubsession())
+            }
+
             return () => clearInterval(interval);
         }
     }, [sessionStatus, activeSubsessionStatus])
@@ -44,10 +51,11 @@ const Timer = () => {
                 variants={timer}
                 initial="start"
                 animate="counting">
-                <div className='text-background font-bold text-5xl md:text-7xl xl:text-9xl pb-4 px-4 md:pb-12 md:px-12 flex justify-start items-end flex-1 '>
+                <div className='text-background font-bold text-5xl md:text-7xl xl:text-8xl pb-4 px-4 md:pb-12 md:px-12 flex justify-start items-end flex-1 '>
                     <h1 className='h-fit'>Time to {activeSubsessionStatus.type}.</h1>
                 </div>
-                <div className='text-background font-bold text-5xl md:text-7xl xl:text-9xl pb-4 px-4 md:pb-12 md:px-12 flex justify-end items-end'>
+                <div className='text-background font-bold text-5xl md:text-7xl xl:text-8xl pb-4 px-4 md:pb-12 md:px-12 flex flex-col justify-end items-end'>
+                    <h1 className='h-fit'>{sessionStatus.repetitionsCompleted}/{sessionStatus.repetitionsGoal}</h1>
                     <h1 className='h-fit'>{activeSubsessionStatus.remainingTime.hours != "00" ? `${activeSubsessionStatus.remainingTime.hours}:` : ""}{activeSubsessionStatus.remainingTime.minutes != "00" ? `${activeSubsessionStatus.remainingTime.minutes}:` : ""}{activeSubsessionStatus.remainingTime.seconds}</h1>
                 </div>
             </motion.div>
@@ -59,10 +67,11 @@ const Timer = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.5 }}>
-                        <div className={`${activeSubsessionStatus.type == "focus" ? "text-primary" : "text-secondary"} font-bold text-5xl md:text-7xl xl:text-9xl pb-4 px-4 md:pb-12 md:px-12 flex justify-start items-end flex-1`}>
+                        <div className={`${activeSubsessionStatus.type == "focus" ? "text-primary" : "text-secondary"} font-bold text-5xl md:text-7xl lg:text-8xl pb-4 px-4 md:pb-12 md:px-12 flex justify-start items-end flex-1`}>
                             <h1 className='h-fit'>Time to {activeSubsessionStatus.type}.</h1>
                         </div>
-                        <div className={`${activeSubsessionStatus.type == "focus" ? "text-primary" : "text-secondary"} font-bold text-5xl md:text-7xl xl:text-9xl pb-4 px-4 md:pb-12 md:px-12 flex justify-end items-end`}>
+                        <div className={`${activeSubsessionStatus.type == "focus" ? "text-primary" : "text-secondary"} font-bold text-5xl md:text-7xl lg:text-8xl pb-4 px-4 md:pb-12 md:px-12 flex flex-col justify-end items-end`}>
+                            <h1 className='h-fit'>{sessionStatus.repetitionsCompleted}/{sessionStatus.repetitionsGoal}</h1>
                             <h1 className='h-fit'>{activeSubsessionStatus.remainingTime.hours != "00" ? `${activeSubsessionStatus.remainingTime.hours}:` : ""}{activeSubsessionStatus.remainingTime.minutes != "00" ? `${activeSubsessionStatus.remainingTime.minutes}:` : ""}{activeSubsessionStatus.remainingTime.seconds}</h1>
                         </div>
                     </motion.div>

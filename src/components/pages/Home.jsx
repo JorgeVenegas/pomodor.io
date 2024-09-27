@@ -11,7 +11,7 @@ import {
     DrawerTrigger,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import { useDispatch, useSelector } from 'react-redux';
 import { decrementGoal, incrementGoal, startSession, startSubsession } from '../redux/TimerSlice'
 import Timer from './home/Timer';
@@ -25,7 +25,6 @@ const Home = () => {
     const repetitionsGoal = useSelector(state => state.timer.goals.find(goal => goal.name === "repetitions"));
 
     const sessionStatus = useSelector(state => state.timer.statuses.find(status => status.name === "session"));
-    const activeSubsessionStatus = useSelector(state => state.timer.statuses.find(status => status.name === "activeSubsession"));
 
     const handleGoalSetting = (goal, increment) => {
         dispatch(increment ? incrementGoal(goal) : decrementGoal(goal))
@@ -40,12 +39,16 @@ const Home = () => {
         <>
             <Drawer>
                 <DrawerTrigger asChild>
-                    <motion.div key="drawer-trigger-button" className={`flex justify-center align-top ${sessionStatus.isRunning ? "hidden" : "visible"}`}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.2 }}>
-                        <Button>Set Pomodoro</Button>
-                    </motion.div>
+                    {
+                       !sessionStatus.isRunning && (
+                            <motion.div key="drawer-trigger-button" className={`flex justify-center align-top}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.2 }}>
+                                <Button>Set Pomodoro</Button>
+                            </motion.div>
+                        )
+                    }
                 </DrawerTrigger>
 
                 <DrawerContent>
