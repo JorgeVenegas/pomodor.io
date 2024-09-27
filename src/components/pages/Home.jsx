@@ -40,7 +40,7 @@ const Home = () => {
         <>
             <Drawer>
                 <DrawerTrigger asChild>
-                    <motion.div key="drawer-trigger-button" className={`flex justify-center align-top ${sessionStatus.goal ? "hidden" : "visible"}`}
+                    <motion.div key="drawer-trigger-button" className={`flex justify-center align-top ${sessionStatus.isRunning ? "hidden" : "visible"}`}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.2 }}>

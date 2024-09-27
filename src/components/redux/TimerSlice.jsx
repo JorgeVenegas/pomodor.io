@@ -4,16 +4,16 @@ import { useDispatch } from 'react-redux';
 const initialState = {
     goals: [{
         name: "focus",
-        min: 15,
+        min: 1,
         max: 180,
-        value: 25,
+        value: 0.2,
         increment: 5
     },
     {
         name: "rest",
         min: 5,
         max: 60,
-        value: 5,
+        value: 0.2,
         increment: 5
     }, {
         name: "repetitions",
@@ -79,14 +79,14 @@ const TimerSlice = createSlice({
             sessionStatus.restGoal = restGoal.value
             sessionStatus.repetitionsGoal = repetitionsGoal.value
         },
-        startSubsession(state, action) {
+        startSubsession(state) {
             console.log("Subsession started")
             const sessionStatus = state.statuses.find(status => status.name === "session")
             const activeSubsessionStatus = state.statuses.find(status => status.name === "activeSubsession")
 
             sessionStatus.isRunning = true
-            activeSubsessionStatus.type = action.payload.type
-            activeSubsessionStatus.goal = action.payload.type == "focus" ? sessionStatus.focusGoal : sessionStatus.restGoal
+            activeSubsessionStatus.type = activeSubsessionStatus.type == "focus" ? "rest" : "focus"
+            activeSubsessionStatus.goal = activeSubsessionStatus.type == "focus" ? sessionStatus.focusGoal : sessionStatus.restGoal
             activeSubsessionStatus.startTime = new Date().getTime()
             activeSubsessionStatus.remainingTime.totalInSeconds = activeSubsessionStatus.goal * 60
         },
@@ -114,7 +114,18 @@ const TimerSlice = createSlice({
             sessionStatus.elapsedTime = new Date().getTime() - sessionStatus.startTime
         },
         endSubSession(state) {
+            const sessionStatus = state.statuses.find(status => status.name === "session")
+            const activeSubsessionStatus = state.statuses.find(status => status.name === "activeSubsession")
 
+            switch (activeSubsessionStatus.type) {
+                case "focus":
+                    sessionStatus.focusSessionsCompleted++
+                    break;
+                case "rest":
+                    sessionStatus.restSessionsCompleted++
+                    sessionStatus.repetitionsCompleted++
+                    break
+            }
         },
         endSession() {
 
