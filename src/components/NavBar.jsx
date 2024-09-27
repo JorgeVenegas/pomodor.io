@@ -47,10 +47,10 @@ const NavBar = () => {
                                         </a>
                                     </NavigationMenuLink>
                                 </li>
-                                <ListItem href="/about" title="Getting Stated">
+                                <ListItem href="#/about" title="Getting Stated">
                                     Learn how to take out the most from pomodor.io. Never waste time again.
                                 </ListItem>
-                                <ListItem href="/dashboard" title="My Dashboard">
+                                <ListItem href="#/dashboard" title="My Dashboard">
                                     Keep track of your progress and keep impoving every day to reach your goals!
                                 </ListItem>
                             </ul>
