@@ -5,14 +5,14 @@ const initialState = {
         name: "focus",
         min: 1,
         max: 180,
-        value: 25,
+        value: 0.2,
         increment: 5
     },
     {
         name: "rest",
         min: 5,
         max: 60,
-        value: 5,
+        value: 0.2,
         increment: 5
     }, {
         name: "repetitions",
@@ -115,9 +115,13 @@ const TimerSlice = createSlice({
 
             activeSubsessionStatus.remainingPercentage = remainingPercentage
         },
-        pauseSession(state, action) {
+        pauseSession(state) {
             const sessionStatus = state.statuses.find(status => status.name === "session")
-            sessionStatus.elapsedTime = new Date().getTime() - sessionStatus.startTime
+            sessionStatus.isPaused = true
+        },
+        resumeSession(state) {
+            const sessionStatus = state.statuses.find(status => status.name === "session")
+            sessionStatus.isPaused = false
         },
         endSubSession(state) {
             const sessionStatus = state.statuses.find(status => status.name === "session")
@@ -155,7 +159,6 @@ const TimerSlice = createSlice({
                     intervalID: "",
                 }
             ]
-
             console.log("Session ended")
         }
     }
@@ -170,6 +173,7 @@ export const {
     startSubsession,
     updateRemainingTime,
     pauseSession,
+    resumeSession,
     endSubSession,
     endSession
 } = TimerSlice.actions;
