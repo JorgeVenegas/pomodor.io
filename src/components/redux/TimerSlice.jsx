@@ -3,22 +3,22 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
     goals: [{
         name: "focus",
-        min: 1,
+        min: 15,
         max: 180,
-        value: 0.2,
+        value: 25,
         increment: 5
     },
     {
         name: "rest",
         min: 5,
         max: 60,
-        value: 0.2,
+        value: 5,
         increment: 5
     }, {
         name: "repetitions",
         min: 1,
         max: 12,
-        value: 1,
+        value: 4,
         increment: 1
     }],
     statuses: [

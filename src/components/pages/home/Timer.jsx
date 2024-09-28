@@ -6,16 +6,20 @@ import { endSession, endSubSession, pauseSession, resumeSession, startSubsession
 const Timer = () => {
     const dispatch = useDispatch();
 
-    const { sessionStatus, activeSubsessionStatus } = useSelector(state => ({
-        sessionStatus: state.timer.statuses.find(status => status.name === "session"),
-        activeSubsessionStatus: state.timer.statuses.find(status => status.name === "activeSubsession"),
-    }));
+    const sessionStatus = useSelector(state => state.timer.statuses.find(status => status.name === "session"));
+    const activeSubsessionStatus = useSelector(state => state.timer.statuses.find(status => status.name === "activeSubsession"));
+
+    const endSubsessionAudio = new Audio("./end.mp3")
+    const endSessionAudio = new Audio("./veryend.mp3")
 
     useEffect(() => {
         if (sessionStatus.isRunning && !sessionStatus.isPaused) {
             let interval = null;
             if (sessionStatus.repetitionsCompleted == sessionStatus.repetitionsGoal) {
-                dispatch(endSession())
+                endSessionAudio.play()
+                interval = setInterval(() => {
+                    dispatch(endSession())
+                }, 1000)
             }
             else if (sessionStatus.hasActiveSubsession) {
                 if (activeSubsessionStatus.remainingTime.totalInSeconds > 0) { // Subsession is running
@@ -24,6 +28,7 @@ const Timer = () => {
                     }, 1000)
                 }
                 else if (activeSubsessionStatus.remainingTime.totalInSeconds == 0) { // Subsession is finished
+                    endSubsessionAudio.play()
                     interval = setInterval(() => {
                         dispatch(endSubSession())
                     }, 1000)

@@ -26,21 +26,39 @@ const Home = () => {
 
     const sessionStatus = useSelector(state => state.timer.statuses.find(status => status.name === "session"));
 
+    const startSessionAudio = new Audio("./start.mp3")
+
     const handleGoalSetting = (goal, increment) => {
         dispatch(increment ? incrementGoal(goal) : decrementGoal(goal))
     }
 
     const handleStartSession = () => {
         dispatch(startSession());
+        startSessionAudio.play()
         dispatch(startSubsession({ type: "focus" }));
     }
 
     return (
         <>
+            {!sessionStatus.isRunning && (
+                <>
+                    <motion.div className='flex justify-center mb-2'
+                        initial={{ opacity: 0, y: -100 }}
+                        animate={{ opacity: 1, y: 0 }}>
+                        <h1 className='text-primary font-bold text-8xl text-center'>Dont waste more time.</h1>
+                    </motion.div>
+                    <motion.div className='flex justify-center mb-6'
+                        initial={{ opacity: 0, y: -100 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}>
+                        <h1 className='text-primary/60 text-xl text-center'>Start focusing right now.</h1>
+                    </motion.div>
+                </>
+            )}
             <Drawer>
                 <DrawerTrigger asChild>
                     {
-                       !sessionStatus.isRunning && (
+                        !sessionStatus.isRunning && (
                             <motion.div key="drawer-trigger-button" className={`flex justify-center align-top}`}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
