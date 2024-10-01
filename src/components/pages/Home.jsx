@@ -45,7 +45,7 @@ const Home = () => {
                     <motion.div className='flex justify-center mb-2'
                         initial={{ opacity: 0, y: -100 }}
                         animate={{ opacity: 1, y: 0 }}>
-                        <h1 className='text-primary font-bold text-8xl text-center'>Dont waste more time.</h1>
+                        <h1 className='text-primary font-bold text-8xl text-center'>Don't waste more time.</h1>
                     </motion.div>
                     <motion.div className='flex justify-center mb-6'
                         initial={{ opacity: 0, y: -100 }}
